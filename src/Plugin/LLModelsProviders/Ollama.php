@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\llm_services\Plugin\LLModels;
+namespace Drupal\llm_services\Plugin\LLModelsProviders;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -9,15 +9,31 @@ use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Ollama integration provider.
+ *
+ * @LLModelsProvider(
+ *   id = "ollama",
+ *   title = @Translation("Ollama"),
+ *   description = @Translation("Ollama hosted models.")
+ * )
  */
 class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInterface, ConfigurableInterface {
+
+  /**
+   * @param array $configuration
+   * @param $plugin_id
+   * @param $plugin_definition
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setConfiguration($configuration);
+  }
 
   /**
    * {@inheritdoc}
    */
   public function listModels(): array {
     // TODO: Implement listModels() method.
-    return [];
+    return ['FAKE LLM' => 'fakeGPT'];
   }
 
   /**

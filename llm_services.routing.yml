@@ -1,0 +1,8 @@
+llm_services.plugin_settings_local_tasks:
+  path: '/admin/config/llm_services/settings/{type}'
+  defaults:
+    _controller: '\Drupal\llm_services\Controller\LocalTasksController::dynamicTasks'
+    _title: 'LLM Services settings'
+    type: ''
+  requirements:
+    _permission: 'administer site'

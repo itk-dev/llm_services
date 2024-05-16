@@ -1,0 +1,5 @@
+services:
+  plugin.manager.llm_services:
+    class: Drupal\llm_services\Plugin\LLModelProviderManager
+    parent: default_plugin_manager
+

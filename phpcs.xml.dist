@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="PHP_CodeSniffer">
-  <description>OS2web Audit PHP Code Sniffer configuration</description>
+  <description>LLM services PHP Code Sniffer configuration</description>
 
   <file>.</file>
   <exclude-pattern>vendor/</exclude-pattern>

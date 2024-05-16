@@ -10,7 +10,7 @@ use Drupal\Core\Plugin\DefaultPluginManager;
  * Provides the LLM plugin manager.
  *
  * @see \Drupal\llm_services\Annotation\LLModelsProvider
- * @see \Drupal\llm_services\Plugin\LLModels\LLMProviderInterface
+ * @see \Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface
  * @see plugin_api
  */
 class LLModelProviderManager extends DefaultPluginManager {
@@ -20,15 +20,15 @@ class LLModelProviderManager extends DefaultPluginManager {
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
     parent::__construct(
-      'Plugin/LLModels',
+      'Plugin/LLModelsProviders',
       $namespaces,
       $module_handler,
+      'Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface',
       'Drupal\llm_services\Annotation\LLModelsProvider',
-      'Drupal\llm_services\Plugin\LLModels\LLMProviderInterface',
     );
 
-    $this->alterInfo('llm_provider_info');
-    $this->setCacheBackend($cache_backend, 'llm_provider_plugins');
+    $this->alterInfo('llm_services_providers_info');
+    $this->setCacheBackend($cache_backend, 'llm_services_providers_plugins');
   }
 
 }
