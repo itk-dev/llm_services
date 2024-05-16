@@ -17,6 +17,7 @@
     },
     "require": {
         "php": "^8.3",
+        "openai-php/client": "^0.8.5",
         "theodo-group/llphant": "^0.6.10"
     },
     "require-dev": {

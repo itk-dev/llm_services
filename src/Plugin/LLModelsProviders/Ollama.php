@@ -6,6 +6,8 @@ use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\llm_services\Client\Ollama as ClientOllama;
+use Drupal\llm_services\Exceptions\NotSupportedException;
 
 /**
  * Ollama integration provider.
@@ -32,8 +34,38 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    */
   public function listModels(): array {
-    // TODO: Implement listModels() method.
-    return ['FAKE LLM' => 'fakeGPT'];
+    $config = $this->getConfiguration();
+
+    $client = new ClientOllama($config['url'], $config['port']);
+    return $client->listLocalModels();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function installModel(): mixed {
+    // TODO: Implement installModel() method.
+    throw new NotSupportedException();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
+   */
+  public function completion(array $body): mixed {
+    // TODO: Implement completions() method.
+    throw new NotSupportedException();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
+   */
+  public function chat(array $body): mixed {
+    // TODO: Implement chatCompletions() method.
+    throw new NotSupportedException();
   }
 
   /**
@@ -100,4 +132,5 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
       $this->setConfiguration($configuration);
     }
   }
+
 }

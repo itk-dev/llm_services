@@ -1,6 +1,6 @@
 <?php
 
-namespace  Drupal\llm_services\Form;
+namespace Drupal\llm_services\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;

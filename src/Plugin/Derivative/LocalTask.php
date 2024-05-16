@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class LocalTask extends DeriverBase implements ContainerDeriverInterface {
 
   public function __construct(
-    private readonly LLModelProviderManager $providerManager
+    private readonly LLModelProviderManager $providerManager,
   ) {
   }
 
