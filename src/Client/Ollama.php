@@ -2,6 +2,8 @@
 
 namespace Drupal\llm_services\Client;
 
+use GuzzleHttp\RequestOptions;
+
 /**
  * Client to communicate with Ollama.
  */
@@ -30,7 +32,7 @@ class Ollama {
    * @throws \GuzzleHttp\Exception\GuzzleException
    * @throws \JsonException
    */
-  function listLocalModels(): array {
+  public function listLocalModels(): array {
     $data = $this->call(method: 'get', uri: '/api/tags');
 
     // @todo: change to value objects.
@@ -45,6 +47,22 @@ class Ollama {
     }
 
     return $models;
+  }
+
+  public function install(string $modelName): string {
+    $this->call(method: 'post', uri: '/api/pull', options: [
+      'json' => [
+        'name' => $modelName,
+        'stream' => false,
+      ],
+      'headers' => [
+        'Content-Type' => 'application/json',
+      ],
+      RequestOptions::CONNECT_TIMEOUT => 10,
+      RequestOptions::TIMEOUT => 300,
+    ]);
+
+    return 'dfs';
   }
 
   /**

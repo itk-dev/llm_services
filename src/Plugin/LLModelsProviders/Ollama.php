@@ -2,12 +2,15 @@
 
 namespace Drupal\llm_services\Plugin\LLModelsProviders;
 
+use _PHPStan_49641e245\Nette\Neon\Exception;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\llm_services\Client\Ollama as ClientOllama;
+use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Exceptions\NotSupportedException;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Ollama integration provider.
@@ -34,18 +37,30 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    */
   public function listModels(): array {
-    $config = $this->getConfiguration();
-
-    $client = new ClientOllama($config['url'], $config['port']);
-    return $client->listLocalModels();
+    try {
+      return $this->getClient()->listLocalModels();
+    }
+    catch (GuzzleException|\JsonException $exception) {
+      throw new CommunicationException(
+        message: 'Error in communicating with LLM services',
+        previous: $exception,
+      );
+    }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function installModel(): mixed {
-    // TODO: Implement installModel() method.
-    throw new NotSupportedException();
+  public function installModel(string $modelName): mixed {
+    try {
+      return $this->getClient()->install($modelName);
+    }
+    catch (GuzzleException|\JsonException $exception) {
+      throw new CommunicationException(
+        message: 'Error in communicating with LLM services',
+        previous: $exception,
+      );
+    }
   }
 
   /**
@@ -116,7 +131,21 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement validateConfigurationForm() method.
+    $values = $form_state->getValues();
+
+    if (filter_var($values['url'], FILTER_VALIDATE_URL) === FALSE) {
+      $form_state->setErrorByName('url', $this->t('Invalid URL.'));
+    }
+
+    $filter_options = [
+      'options' => [
+          'min_range' => 1,
+          'max_range' => 65535,
+        ]
+    ];
+    if (filter_var($values['port'], FILTER_VALIDATE_INT, $filter_options) === FALSE) {
+      $form_state->setErrorByName('port', $this->t('Invalid port range. Should be between 1 and 65535.'));
+    }
   }
 
   /**
@@ -131,6 +160,24 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
       ];
       $this->setConfiguration($configuration);
     }
+
+    // Try to connect to Ollama to test the connection.
+    try {
+      $this->listModels();
+      \Drupal::messenger()->addMessage('Successfully connected to Ollama');
+    } catch (\Exception $exception) {
+      \Drupal::messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
+    }
+  }
+
+  /**
+   * Get a client.
+   *
+   * @return \Drupal\llm_services\Client\Ollama
+   *   Client to communicate with Ollama
+   */
+  public function getClient(): ClientOllama {
+    return new ClientOllama($this->configuration['url'], $this->configuration['port']);
   }
 
 }
