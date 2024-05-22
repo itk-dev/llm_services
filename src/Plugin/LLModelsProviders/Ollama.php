@@ -24,9 +24,7 @@ use GuzzleHttp\Exception\GuzzleException;
 class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInterface, ConfigurableInterface {
 
   /**
-   * @param array $configuration
-   * @param $plugin_id
-   * @param $plugin_definition
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -40,7 +38,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     try {
       return $this->getClient()->listLocalModels();
     }
-    catch (GuzzleException|\JsonException $exception) {
+    catch (GuzzleException | \JsonException $exception) {
       throw new CommunicationException(
         message: 'Error in communicating with LLM services',
         previous: $exception,
@@ -55,7 +53,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     try {
       return $this->getClient()->install($modelName);
     }
-    catch (GuzzleException|\JsonException $exception) {
+    catch (GuzzleException | \JsonException $exception) {
       throw new CommunicationException(
         message: 'Error in communicating with LLM services',
         previous: $exception,
@@ -139,9 +137,9 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
 
     $filter_options = [
       'options' => [
-          'min_range' => 1,
-          'max_range' => 65535,
-        ]
+        'min_range' => 1,
+        'max_range' => 65535,
+      ],
     ];
     if (filter_var($values['port'], FILTER_VALIDATE_INT, $filter_options) === FALSE) {
       $form_state->setErrorByName('port', $this->t('Invalid port range. Should be between 1 and 65535.'));

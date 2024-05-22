@@ -7,7 +7,7 @@ use GuzzleHttp\RequestOptions;
 /**
  * Client to communicate with Ollama.
  */
-class Ollama {
+readonly class Ollama {
 
   /**
    * Default constructor.
@@ -18,8 +18,8 @@ class Ollama {
    *   The port that Ollama is listing on.
    */
   public function __construct(
-    private readonly string $url,
-    private readonly int $port,
+    private string $url,
+    private int $port,
   ) {
   }
 
@@ -49,6 +49,19 @@ class Ollama {
     return $models;
   }
 
+  /**
+   * Install/update model in Ollama.
+   *
+   * @param string $modelName
+   *   Name of the model
+   *
+   * @return string
+   *
+   * @see https://ollama.com/library
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @throws \JsonException
+   */
   public function install(string $modelName): string {
     $this->call(method: 'post', uri: '/api/pull', options: [
       'json' => [
@@ -62,7 +75,8 @@ class Ollama {
       RequestOptions::TIMEOUT => 300,
     ]);
 
-    return 'dfs';
+    // @todo: change to stream and return status.
+    return '';
   }
 
   /**
