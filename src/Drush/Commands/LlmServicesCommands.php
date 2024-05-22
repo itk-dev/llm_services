@@ -2,6 +2,8 @@
 
 namespace Drupal\llm_services\Drush\Commands;
 
+use Drupal\llm_services\Model\Message;
+use Drupal\llm_services\Model\Payload;
 use Drupal\llm_services\Plugin\LLModelProviderManager;
 use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
@@ -63,7 +65,35 @@ final class LlmServicesCommands extends DrushCommands {
     $provider = $this->providerManager->createInstance($provider);
     $models = $provider->installModel($name);
 
+    // @todo: stream responses.
 
   }
 
+  /**
+   * Install model in provider.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   */
+  #[CLI\Command(name: 'llm:model:completion', aliases: ['llm-completion'])]
+  #[CLI\Argument(name: 'provider', description: 'Name of the provider (plugin).')]
+  #[CLI\Argument(name: 'name', description: 'Name of the model to use.')]
+  #[CLI\Argument(name: 'prompt', description: 'The prompt to generate a response for.')]
+  #[CLI\Usage(name: 'llm:model:completion ollama llama2 "Why is the sky blue?"', description: 'Install LLama2 modul in Ollama')]
+  public function completion(string $provider, string $name, string $prompt): void {
+    $provider = $this->providerManager->createInstance($provider);
+
+    $payLoad = new Payload();
+    $payLoad->model = $name;
+
+    $msg = new Message();
+    $msg->content = $prompt;
+    $payLoad->messages[] = $msg;
+
+    foreach ($provider->completion($payLoad) as $res) {
+      $this->output()->write($res['response']);
+    };
+    $this->output()->write("\n");
+
+  }
 }

@@ -3,33 +3,34 @@
 namespace Drupal\llm_services\Model;
 
 /**
- * Represents a message to be sent using a specific model.
+ * Represents a chat message.
+ *
+ * @see https://github.com/ollama/ollama/blob/main/docs/api.md#parameters-1
  */
 class Message {
 
   /**
-   * Name of the model to use.
+   * The role of this message.
+   *
+   * @var \Drupal\llm_services\Model\MessageRoles
+   */
+  public MessageRoles $role;
+
+  /**
+   * The message content.
    *
    * @var string
    */
-  public string $model;
+  public string $content;
 
   /**
-   * Message(s) to send.
+   * Images base64 encoded.
    *
-   * @var array<\Drupal\llm_services\Model\ChatMessage>
+   * Used for multimodal models such as llava. Which can describe the content of
+   * the image.
    *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#parameters-1
+   * @var array<string>
    */
-  public array $messages;
-
-  /**
-   * Additional model parameters.
-   *
-   * @var array<string, string>
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values
-   */
-  public array $options;
+  public array $images;
 
 }

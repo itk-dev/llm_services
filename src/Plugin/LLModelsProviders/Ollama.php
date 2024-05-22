@@ -2,7 +2,6 @@
 
 namespace Drupal\llm_services\Plugin\LLModelsProviders;
 
-use _PHPStan_49641e245\Nette\Neon\Exception;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
@@ -10,6 +9,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\llm_services\Client\Ollama as ClientOllama;
 use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Exceptions\NotSupportedException;
+use Drupal\llm_services\Model\Payload;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
@@ -66,9 +66,8 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
-  public function completion(array $body): mixed {
-    // TODO: Implement completions() method.
-    throw new NotSupportedException();
+  public function completion(Payload $payload): mixed {
+    return $this->getClient()->completion($payload);
   }
 
   /**
@@ -76,7 +75,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
    */
-  public function chat(array $body): mixed {
+  public function chat(Payload $payload): mixed {
     // TODO: Implement chatCompletions() method.
     throw new NotSupportedException();
   }
