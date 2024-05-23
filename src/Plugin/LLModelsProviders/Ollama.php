@@ -53,7 +53,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     try {
       return $this->getClient()->install($modelName);
     }
-    catch (GuzzleException | \JsonException $exception) {
+    catch (GuzzleException $exception) {
       throw new CommunicationException(
         message: 'Error in communicating with LLM services',
         previous: $exception,
@@ -66,8 +66,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
-  public function completion(Payload $payload): mixed {
-    return $this->getClient()->completion($payload);
+  public function completion(Payload $payload): \Generator {
+    foreach ($this->getClient()->completion($payload) as $chunk) {
+      yield $chunk;
+    }
   }
 
   /**
@@ -101,7 +103,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   public function defaultConfiguration(): array {
     return [
       'url' => 'http://ollama',
-      'port' => '11434'
+      'port' => '11434',
     ];
   }
 

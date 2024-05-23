@@ -63,14 +63,23 @@ final class LlmServicesCommands extends DrushCommands {
   #[CLI\Usage(name: 'llm:install:model ollama llama2', description: 'Install LLama2 modul in Ollama')]
   public function installModel(string $provider, string $name): void {
     $provider = $this->providerManager->createInstance($provider);
-    $models = $provider->installModel($name);
 
     // @todo: stream responses.
+    foreach ($provider->installModel($name) as $progress) {
+      if (isset($progress['total']) && isset($progress['completed']))  {
+        $percent = ($progress['completed'] / $progress['total']) * 100;
+        $this->output()->writeln(sprintf('%s (%0.2f%% downloaded)', $progress['status'], $percent));
+      }
+      else  {
+        $this->output()->writeln($progress['status']);
+      }
+    }
+    $this->output()->write("\n");
 
   }
 
   /**
-   * Install model in provider.
+   * Try out completion with a model.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
@@ -92,8 +101,7 @@ final class LlmServicesCommands extends DrushCommands {
 
     foreach ($provider->completion($payLoad) as $res) {
       $this->output()->write($res['response']);
-    };
+    }
     $this->output()->write("\n");
-
   }
 }

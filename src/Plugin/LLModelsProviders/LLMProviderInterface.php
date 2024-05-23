@@ -3,7 +3,6 @@
 namespace Drupal\llm_services\Plugin\LLModelsProviders;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
-use Drupal\llm_services\Model\Message;
 use Drupal\llm_services\Model\Payload;
 
 /**
@@ -37,7 +36,7 @@ interface LLMProviderInterface extends PluginInspectionInterface {
   /**
    * Performs a completion process.
    *
-   * @param Payload $payload
+   * @param \Drupal\llm_services\Model\Payload $payload
    *   The body of the completion request. It should contain the necessary data
    *   for completion.
    *
@@ -51,7 +50,7 @@ interface LLMProviderInterface extends PluginInspectionInterface {
   /**
    * Initiates a chat.
    *
-   * @param Payload $payload
+   * @param \Drupal\llm_services\Model\Payload $payload
    *   The body of the chat request.
    *
    * @return mixed

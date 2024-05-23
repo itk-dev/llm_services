@@ -2,14 +2,24 @@
 
 namespace Drupal\llm_services\Client;
 
+use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Model\Payload;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Client to communicate with Ollama.
  */
 class Ollama {
 
+  /**
+   * Cache for stream parsing.
+   *
+   * @see parse()
+   *
+   * @var string
+   */
   private string $parserCache = '';
 
   /**
@@ -36,7 +46,9 @@ class Ollama {
    * @throws \JsonException
    */
   public function listLocalModels(): array {
-    $data = $this->call(method: 'get', uri: '/api/tags');
+    $response = $this->call(method: 'get', uri: '/api/tags');
+    $data = $response->getBody()->getContents();
+    $data = json_decode($data, TRUE);
 
     // @todo: change to value objects.
     $models = [];
@@ -60,26 +72,30 @@ class Ollama {
    *
    * @return string
    *
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   *
    * @see https://ollama.com/library
    *
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   * @throws \JsonException
    */
-  public function install(string $modelName): string {
-    $this->call(method: 'post', uri: '/api/pull', options: [
+  public function install(string $modelName): \Generator {
+    $response = $this->call(method: 'post', uri: '/api/pull', options: [
       'json' => [
         'name' => $modelName,
-        'stream' => false,
+        'stream' => true,
       ],
       'headers' => [
         'Content-Type' => 'application/json',
       ],
       RequestOptions::CONNECT_TIMEOUT => 10,
       RequestOptions::TIMEOUT => 300,
+      RequestOptions::STREAM => true,
     ]);
 
-    // @todo: change to stream and return status.
-    return '';
+    $body = $response->getBody();
+    while (!$body->eof()) {
+      $data = $body->read(1024);
+      yield from $this->parse($data);;
+    }
   }
 
   /**
@@ -91,36 +107,30 @@ class Ollama {
    *
    * @return \Generator
    *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
    *
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
   public function completion(Payload $payload): \Generator {
-
-    $json = [
-      'model' => $payload->model,
-      'prompt' => $payload->messages[0]->content,
-      'stream' => true,
-    ];
-
-    $client = \Drupal::httpClient();
-    $response = $client->request(
-      'POST',
-      $this->getURL('/api/generate'),
-      [
-        'json' => $json,
-        RequestOptions::CONNECT_TIMEOUT => 10,
-        RequestOptions::TIMEOUT => 300,
-        RequestOptions::STREAM => true,
-      ]
-    );
+    $response = $this->call(method: 'post', uri: '/api/generate', options: [
+      'json' => [
+        'model' => $payload->model,
+        'prompt' => $payload->messages[0]->content,
+        'stream' => true,
+      ],
+      'headers' => [
+        'Content-Type' => 'application/json',
+      ],
+      RequestOptions::CONNECT_TIMEOUT => 10,
+      RequestOptions::TIMEOUT => 300,
+      RequestOptions::STREAM => true,
+    ]);
 
     $body = $response->getBody();
     while (!$body->eof()) {
       $data = $body->read(1024);
       yield from $this->parse($data);;
     }
-
   }
 
   /**
@@ -137,8 +147,6 @@ class Ollama {
    *
    * @return \Generator
    *   Yield back json objects.
-   *
-   * @todo: should json be converted to valid LLMResObject?
    *
    * @throws \JsonException
    */
@@ -186,25 +194,25 @@ class Ollama {
    * @param array $options
    *   Extra options and/or payload to post.
    *
-   * @return mixed
-   *   The result of the call.
+   * @return \Psr\Http\Message\ResponseInterface
+   *   The response object.
    *
-   * @todo: what about stream calls?
-   *
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   * @throws \JsonException
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
-  private function call(string $method, string $uri, array $options = []): mixed {
+  private function call(string $method, string $uri, array $options = []): ResponseInterface {
     $client = \Drupal::httpClient();
 
-    $response = $client->request($method, $this->getURL($uri), $options);
-
-    if ($response->getStatusCode() !== 200) {
-      throw new \Exception('Request failed');
+    try {
+      $response = $client->request($method, $this->getURL($uri), $options);
+      if ($response->getStatusCode() !== 200) {
+        throw new CommunicationException('Request failed', $response->getStatusCode());
+      }
     }
-    $data = $response->getBody()->getContents();
+    catch (GuzzleException $exception) {
+      throw new CommunicationException('Request failed', $exception->getCode(), $exception);
+    }
 
-    return json_decode($data, TRUE, 512, JSON_THROW_ON_ERROR);
+    return $response;
   }
 
   /**
