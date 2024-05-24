@@ -16,9 +16,9 @@ class Ollama {
   /**
    * Cache for stream parsing.
    *
-   * @see parse()
-   *
    * @var string
+   *
+   * @see parse()
    */
   private string $parserCache = '';
 
@@ -50,7 +50,7 @@ class Ollama {
     $data = $response->getBody()->getContents();
     $data = json_decode($data, TRUE);
 
-    // @todo: change to value objects.
+    // @todo Change to value objects.
     $models = [];
     foreach ($data['models'] as $item) {
       $models[$item['model']] = [
@@ -70,44 +70,46 @@ class Ollama {
    * @param string $modelName
    *   Name of the model.
    *
-   * @return string
-   *
-   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @return \Generator
+   *   The progress of installation.
    *
    * @see https://ollama.com/library
    *
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @throws \JsonException
    */
   public function install(string $modelName): \Generator {
     $response = $this->call(method: 'post', uri: '/api/pull', options: [
       'json' => [
         'name' => $modelName,
-        'stream' => true,
+        'stream' => TRUE,
       ],
       'headers' => [
         'Content-Type' => 'application/json',
       ],
       RequestOptions::CONNECT_TIMEOUT => 10,
       RequestOptions::TIMEOUT => 300,
-      RequestOptions::STREAM => true,
+      RequestOptions::STREAM => TRUE,
     ]);
 
     $body = $response->getBody();
     while (!$body->eof()) {
       $data = $body->read(1024);
-      yield from $this->parse($data);;
+      yield from $this->parse($data);
     }
   }
 
   /**
    * Ask a question to the model.
    *
-   * @TODO make call function that can do the stream, if possible.
-   *
    * @param \Drupal\llm_services\Model\Payload $payload
+   *   The question to ask the module.
    *
    * @return \Generator
+   *   The response from the model as it completes.
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @throws \JsonException
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
@@ -116,20 +118,20 @@ class Ollama {
       'json' => [
         'model' => $payload->model,
         'prompt' => $payload->messages[0]->content,
-        'stream' => true,
+        'stream' => TRUE,
       ],
       'headers' => [
         'Content-Type' => 'application/json',
       ],
       RequestOptions::CONNECT_TIMEOUT => 10,
       RequestOptions::TIMEOUT => 300,
-      RequestOptions::STREAM => true,
+      RequestOptions::STREAM => TRUE,
     ]);
 
     $body = $response->getBody();
     while (!$body->eof()) {
       $data = $body->read(1024);
-      yield from $this->parse($data);;
+      yield from $this->parse($data);
     }
   }
 
@@ -156,8 +158,8 @@ class Ollama {
 
     foreach ($strings as $str) {
       if (json_validate($str)) {
-          // Valid json string lets decode an yield it.
-          yield json_decode($str, true, flags: JSON_THROW_ON_ERROR);
+        // Valid json string lets decode an yield it.
+        yield json_decode($str, TRUE, flags: JSON_THROW_ON_ERROR);
       }
       else {
         // Ignore empty strings.
@@ -176,7 +178,7 @@ class Ollama {
               return;
             }
             // Valid json string, yield, reset cache.
-            yield json_decode($str, true, flags: JSON_THROW_ON_ERROR);
+            yield json_decode($str, TRUE, flags: JSON_THROW_ON_ERROR);
             $this->parserCache = '';
           }
         }
@@ -190,7 +192,7 @@ class Ollama {
    * @param string $method
    *   The method to use (GET/POST).
    * @param string $uri
-   *   The API endpoint to call
+   *   The API endpoint to call.
    * @param array $options
    *   Extra options and/or payload to post.
    *
@@ -203,7 +205,7 @@ class Ollama {
     $client = \Drupal::httpClient();
 
     try {
-      $response = $client->request($method, $this->getURL($uri), $options);
+      $response = $client->request($method, $this->getUrl($uri), $options);
       if ($response->getStatusCode() !== 200) {
         throw new CommunicationException('Request failed', $response->getStatusCode());
       }
@@ -221,10 +223,10 @@ class Ollama {
    * @param string $uri
    *   The URI to append to the base URL. Default is an empty string.
    *
-   * @return string T
+   * @return string
    *   The complete URL string.
    */
-  private function getURL(string $uri = ''): string {
+  private function getUrl(string $uri = ''): string {
     return $this->url . ':' . $this->port . ($uri ? '/' . ltrim($uri, '/') : '');
   }
 

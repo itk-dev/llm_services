@@ -45,7 +45,7 @@ final class LlmServicesCommands extends DrushCommands {
     $provider = $this->providerManager->createInstance($provider);
     $models = $provider->listModels();
 
-    // @todo output more information.
+    // @todo Output more information.
     foreach ($models as $model) {
       $this->writeln($model['name'] . ' (' . $model['modified'] . ')');
     }
@@ -64,18 +64,17 @@ final class LlmServicesCommands extends DrushCommands {
   public function installModel(string $provider, string $name): void {
     $provider = $this->providerManager->createInstance($provider);
 
-    // @todo: stream responses.
+    // @todo Stream responses.
     foreach ($provider->installModel($name) as $progress) {
-      if (isset($progress['total']) && isset($progress['completed']))  {
+      if (isset($progress['total']) && isset($progress['completed'])) {
         $percent = ($progress['completed'] / $progress['total']) * 100;
         $this->output()->writeln(sprintf('%s (%0.2f%% downloaded)', $progress['status'], $percent));
       }
-      else  {
+      else {
         $this->output()->writeln($progress['status']);
       }
     }
     $this->output()->write("\n");
-
   }
 
   /**
@@ -100,8 +99,9 @@ final class LlmServicesCommands extends DrushCommands {
     $payLoad->messages[] = $msg;
 
     foreach ($provider->completion($payLoad) as $res) {
-      $this->output()->write($res['response']);
+      $this->output()->write($res->getResponse());
     }
     $this->output()->write("\n");
   }
+
 }

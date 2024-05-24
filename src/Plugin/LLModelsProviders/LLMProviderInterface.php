@@ -40,12 +40,12 @@ interface LLMProviderInterface extends PluginInspectionInterface {
    *   The body of the completion request. It should contain the necessary data
    *   for completion.
    *
-   * @return mixed
+   * @return \Generator<\Drupal\llm_services\Model\CompletionResponseInterface>
    *   The result of the completion process.
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
-  public function completion(Payload $payload): mixed;
+  public function completion(Payload $payload): \Generator;
 
   /**
    * Initiates a chat.
@@ -53,11 +53,11 @@ interface LLMProviderInterface extends PluginInspectionInterface {
    * @param \Drupal\llm_services\Model\Payload $payload
    *   The body of the chat request.
    *
-   * @return mixed
+   * @return \Generator
    *   The result of the chat initiation.
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
-  public function chat(Payload $payload): mixed;
+  public function chat(Payload $payload): \Generator;
 
 }

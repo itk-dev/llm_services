@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\llm_services\Client\Ollama as ClientOllama;
+use Drupal\llm_services\Client\OllamaCompletionResponse;
 use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Exceptions\NotSupportedException;
 use Drupal\llm_services\Model\Payload;
@@ -49,7 +50,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   /**
    * {@inheritdoc}
    */
-  public function installModel(string $modelName): mixed {
+  public function installModel(string $modelName): \Generator|string {
     try {
       return $this->getClient()->install($modelName);
     }
@@ -64,11 +65,18 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   /**
    * {@inheritdoc}
    *
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
   public function completion(Payload $payload): \Generator {
     foreach ($this->getClient()->completion($payload) as $chunk) {
-      yield $chunk;
+      yield new OllamaCompletionResponse(
+        $chunk['model'],
+        $chunk['response'],
+        $chunk['done'],
+        $chunk['context'] ?? '',
+      );
     }
   }
 
@@ -77,8 +85,8 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
    */
-  public function chat(Payload $payload): mixed {
-    // TODO: Implement chatCompletions() method.
+  public function chat(Payload $payload): \Generator {
+    // @todo Implement chatCompletions() method.
     throw new NotSupportedException();
   }
 
@@ -164,7 +172,8 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     try {
       $this->listModels();
       \Drupal::messenger()->addMessage('Successfully connected to Ollama');
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       \Drupal::messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
     }
   }
