@@ -19,7 +19,7 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
    *   The content of the message from the model.
    * @param \Drupal\llm_services\Model\MessageRoles $role
    *   The role of the message.
-   * @param array $images
+   * @param array<string> $images
    *   Base64 encoded array of images.
    * @param bool $done
    *   The module completion state.

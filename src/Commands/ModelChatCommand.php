@@ -103,6 +103,7 @@ class ModelChatCommand extends Command {
     $msg->content = $systemPrompt;
     $payLoad->messages[] = $msg;
 
+    /** @var \Symfony\Component\Console\Helper\HelperInterface $helper */
     $helper = $this->getHelper('question');
     $question = new Question('Message: ', '');
 

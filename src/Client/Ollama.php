@@ -4,6 +4,7 @@ namespace Drupal\llm_services\Client;
 
 use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Model\Payload;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
@@ -29,10 +30,13 @@ class Ollama {
    *   The URL of the Ollama server.
    * @param int $port
    *   The port that Ollama is listening at.
+   * @param \GuzzleHttp\ClientInterface $client
+   *   The http client used to interact with ollama.
    */
   public function __construct(
     private readonly string $url,
     private readonly int $port,
+    private readonly ClientInterface $client,
   ) {
   }
 
@@ -176,7 +180,7 @@ class Ollama {
    * @param \Drupal\llm_services\Model\Payload $payload
    *   The payload sent to the chat function.
    *
-   * @return array
+   * @return array{content: string, role: string}[]
    *   Array of messages to send to Ollama.
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#chat-request-with-history
@@ -251,7 +255,7 @@ class Ollama {
    *   The method to use (GET/POST).
    * @param string $uri
    *   The API endpoint to call.
-   * @param array $options
+   * @param array<string, mixed> $options
    *   Extra options and/or payload to post.
    *
    * @return \Psr\Http\Message\ResponseInterface
@@ -260,10 +264,8 @@ class Ollama {
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
   private function call(string $method, string $uri, array $options = []): ResponseInterface {
-    $client = \Drupal::httpClient();
-
     try {
-      $response = $client->request($method, $this->getUrl($uri), $options);
+      $response = $this->client->request($method, $this->getUrl($uri), $options);
       if ($response->getStatusCode() !== 200) {
         throw new CommunicationException('Request failed', $response->getStatusCode());
       }

@@ -13,7 +13,7 @@ interface LLMProviderInterface extends PluginInspectionInterface {
   /**
    * List model supported by the provider.
    *
-   * @return array<string, array<string>,<string>>
+   * @return array<string,array<string,string>>
    *   List of supported language models.
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException

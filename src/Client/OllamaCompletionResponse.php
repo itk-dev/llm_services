@@ -18,7 +18,7 @@ readonly class OllamaCompletionResponse implements CompletionResponseInterface {
    *   The response from the model.
    * @param bool $done
    *   The module completion state.
-   * @param array<int> $context
+   * @param array<string> $context
    *   The generated context when completed.
    */
   public function __construct(
@@ -52,6 +52,9 @@ readonly class OllamaCompletionResponse implements CompletionResponseInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @return array<string>
+   *   The context given from the model.
    */
   public function getContext(): array {
     return $this->context;

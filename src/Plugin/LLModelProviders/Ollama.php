@@ -33,6 +33,9 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
 
   /**
    * {@inheritdoc}
+   *
+   * @return array<string, mixed>
+   *   List of models.
    */
   public function listModels(): array {
     return $this->getClient()->listLocalModels();
@@ -101,6 +104,9 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
 
   /**
    * {@inheritdoc}
+   *
+   * @return array<string, string>
+   *   Default configuration array.
    */
   public function defaultConfiguration(): array {
     return [
@@ -131,7 +137,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $values = $form_state->getValues();
 
     if (filter_var($values['url'], FILTER_VALIDATE_URL) === FALSE) {
@@ -165,10 +171,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     // Try to connect to Ollama to test the connection.
     try {
       $this->listModels();
-      \Drupal::messenger()->addMessage('Successfully connected to Ollama');
+      $this->messenger->addMessage('Successfully connected to Ollama');
     }
     catch (\Exception $exception) {
-      \Drupal::messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
+      $this->messenger->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
     }
   }
 
@@ -176,10 +182,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * Get a client.
    *
    * @return \Drupal\llm_services\Client\Ollama
-   *   Client to communicate with Ollama
+   *   Client to communicate with Ollama.
    */
   public function getClient(): ClientOllama {
-    return new ClientOllama($this->configuration['url'], $this->configuration['port']);
+    return new ClientOllama($this->configuration['url'], $this->configuration['port'], \Drupal::httpClient());
   }
 
 }

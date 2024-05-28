@@ -28,12 +28,7 @@ class LLModelProviderManager extends DefaultPluginManager {
   /**
    * Constructor for LLModelProviderManager.
    */
-  public function __construct(
-    \Traversable $namespaces,
-    CacheBackendInterface $cache_backend,
-    ModuleHandlerInterface $module_handler,
-    ConfigFactoryInterface $configFactory,
-  ) {
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $configFactory) {
     $this->configFactory = $configFactory;
 
     parent::__construct(
