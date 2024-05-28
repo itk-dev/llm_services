@@ -28,7 +28,7 @@ class Ollama {
    * @param string $url
    *   The URL of the Ollama server.
    * @param int $port
-   *   The port that Ollama is listening on.
+   *   The port that Ollama is listening at.
    */
   public function __construct(
     private readonly string $url,
@@ -42,15 +42,13 @@ class Ollama {
    * @return array<string, array<string, string>>
    *   Basic information about the models.
    *
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   * @throws \JsonException
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
   public function listLocalModels(): array {
     $response = $this->call(method: 'get', uri: '/api/tags');
     $data = $response->getBody()->getContents();
     $data = json_decode($data, TRUE);
 
-    // @todo Change to value objects.
     $models = [];
     foreach ($data['models'] as $item) {
       $models[$item['model']] = [
@@ -133,6 +131,66 @@ class Ollama {
       $data = $body->read(1024);
       yield from $this->parse($data);
     }
+  }
+
+  /**
+   * Chat with a model.
+   *
+   * @param \Drupal\llm_services\Model\Payload $payload
+   *   The question to ask the module and the chat history.
+   *
+   * @return \Generator
+   *   The response from the model as it completes it.
+   *
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @throws \JsonException
+   */
+  public function chat(Payload $payload): \Generator {
+    $response = $this->call(method: 'post', uri: '/api/chat', options: [
+      'json' => [
+        'model' => $payload->model,
+        'messages' => $this->chatMessagesAsArray($payload),
+        'stream' => TRUE,
+      ],
+      'headers' => [
+        'Content-Type' => 'application/json',
+      ],
+      RequestOptions::CONNECT_TIMEOUT => 10,
+      RequestOptions::TIMEOUT => 300,
+      RequestOptions::STREAM => TRUE,
+    ]);
+
+    $body = $response->getBody();
+    while (!$body->eof()) {
+      $data = $body->read(1024);
+      yield from $this->parse($data);
+    }
+  }
+
+  /**
+   * Take all payload messages and change them into an array.
+   *
+   * This array of messages is used to give the model some chat context to make
+   * the interaction appear more like real char with a person.
+   *
+   * @param \Drupal\llm_services\Model\Payload $payload
+   *   The payload sent to the chat function.
+   *
+   * @return array
+   *   Array of messages to send to Ollama.
+   *
+   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#chat-request-with-history
+   */
+  private function chatMessagesAsArray(Payload $payload): array {
+    $messages = [];
+    foreach ($payload->messages as $message) {
+      $messages[] = [
+        'content' => $message->content,
+        'role' => $message->role->value,
+      ];
+    }
+
+    return $messages;
   }
 
   /**

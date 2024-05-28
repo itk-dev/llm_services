@@ -53,8 +53,8 @@ interface LLMProviderInterface extends PluginInspectionInterface {
    * @param \Drupal\llm_services\Model\Payload $payload
    *   The body of the chat request.
    *
-   * @return \Generator
-   *   The result of the chat initiation.
+   * @return \Generator<\Drupal\llm_services\Model\ChatResponseInterface>
+   *   The result of the chat.
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */

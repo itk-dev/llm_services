@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\llm_services\Commands;
 
-use Drupal\llm_services\Model\Message;
-use Drupal\llm_services\Model\Payload;
 use Drupal\llm_services\Plugin\LLModelProviderManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -37,7 +34,7 @@ class ProviderInstallCommand extends Command {
     $this
       ->setName('llm:provider:install')
       ->setDescription('Install model in provider')
-      ->addUsage('llm:install:model ollama llama2')
+      ->addUsage('llm:provider:install ollama llama3')
       ->addArgument(
         name: 'provider',
         mode: InputArgument::REQUIRED,

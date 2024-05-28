@@ -7,11 +7,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\llm_services\Client\Ollama as ClientOllama;
+use Drupal\llm_services\Client\OllamaChatResponse;
 use Drupal\llm_services\Client\OllamaCompletionResponse;
-use Drupal\llm_services\Exceptions\CommunicationException;
-use Drupal\llm_services\Exceptions\NotSupportedException;
+use Drupal\llm_services\Model\MessageRoles;
 use Drupal\llm_services\Model\Payload;
-use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Ollama integration provider.
@@ -36,36 +35,21 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    */
   public function listModels(): array {
-    try {
-      return $this->getClient()->listLocalModels();
-    }
-    catch (GuzzleException | \JsonException $exception) {
-      throw new CommunicationException(
-        message: 'Error in communicating with LLM services',
-        previous: $exception,
-      );
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function installModel(string $modelName): \Generator|string {
-    try {
-      return $this->getClient()->install($modelName);
-    }
-    catch (GuzzleException $exception) {
-      throw new CommunicationException(
-        message: 'Error in communicating with LLM services',
-        previous: $exception,
-      );
-    }
+    return $this->getClient()->listLocalModels();
   }
 
   /**
    * {@inheritdoc}
    *
-   * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @throws \JsonException
+   */
+  public function installModel(string $modelName): \Generator|string {
+    return $this->getClient()->install($modelName);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
    * @throws \JsonException
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
@@ -73,10 +57,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   public function completion(Payload $payload): \Generator {
     foreach ($this->getClient()->completion($payload) as $chunk) {
       yield new OllamaCompletionResponse(
-        $chunk['model'],
-        $chunk['response'],
-        $chunk['done'],
-        $chunk['context'] ?? [],
+        model: $chunk['model'],
+        response: $chunk['response'],
+        done: $chunk['done'],
+        context: $chunk['context'] ?? [],
       );
     }
   }
@@ -84,11 +68,20 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   /**
    * {@inheritdoc}
    *
+   * @throws \JsonException
+   *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
    */
   public function chat(Payload $payload): \Generator {
-    // @todo Implement chatCompletions() method.
-    throw new NotSupportedException();
+    foreach ($this->getClient()->chat($payload) as $chunk) {
+      yield new OllamaChatResponse(
+        model: $chunk['model'],
+        content: $chunk['message']['content'] ?? '',
+        role: $chunk['message']['role'] ? MessageRoles::from($chunk['message']['role']) : MessageRoles::Assistant,
+        images: $chunk['message']['images'] ?? [],
+        done: $chunk['done'],
+      );
+    }
   }
 
   /**
