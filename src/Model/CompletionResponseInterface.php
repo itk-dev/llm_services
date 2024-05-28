@@ -37,9 +37,9 @@ interface CompletionResponseInterface {
    * This can be seen at chat history in completion requests to make the model
    * more context aware.
    *
-   * @return string
+   * @return mixed
    *   Context from the completion.
    */
-  public function getContext(): string;
+  public function getContext(): mixed;
 
 }

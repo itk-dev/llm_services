@@ -66,6 +66,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
+   * @throws \JsonException
    *
    * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
@@ -75,7 +76,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
         $chunk['model'],
         $chunk['response'],
         $chunk['done'],
-        $chunk['context'] ?? '',
+        $chunk['context'] ?? [],
       );
     }
   }
