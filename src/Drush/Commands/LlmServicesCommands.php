@@ -87,7 +87,7 @@ final class LlmServicesCommands extends DrushCommands {
   #[CLI\Argument(name: 'provider', description: 'Name of the provider (plugin).')]
   #[CLI\Argument(name: 'name', description: 'Name of the model to use.')]
   #[CLI\Argument(name: 'prompt', description: 'The prompt to generate a response for.')]
-  #[CLI\Usage(name: 'llm:model:completion ollama llama2 "Why is the sky blue?"', description: 'Install LLama2 modul in Ollama')]
+  #[CLI\Usage(name: 'llm:model:completion ollama llama2 "Why is the sky blue?"', description: 'Prompt LLama2')]
   public function completion(string $provider, string $name, string $prompt): void {
     $provider = $this->providerManager->createInstance($provider);
 

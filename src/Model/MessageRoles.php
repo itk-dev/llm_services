@@ -14,6 +14,6 @@ namespace Drupal\llm_services\Model;
  */
 enum MessageRoles: string {
   case Assistant = 'assistant';
-  case System = "system";
+  case System = 'system';
   case User = 'user';
 }

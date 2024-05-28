@@ -72,8 +72,8 @@ class SettingsForm extends ConfigFormBase {
 
     $form['provider'] = [
       '#type' => 'select',
-      '#title' => $this->t('Log provider'),
-      '#description' => $this->t('Select the logger provider you which to use'),
+      '#title' => $this->t('Provider'),
+      '#description' => $this->t('Select the provider you wish to use'),
       '#options' => $options,
       '#default_value' => $config->get('provider'),
     ];

@@ -28,7 +28,7 @@ class Ollama {
    * @param string $url
    *   The URL of the Ollama server.
    * @param int $port
-   *   The port that Ollama is listing on.
+   *   The port that Ollama is listening on.
    */
   public function __construct(
     private readonly string $url,
