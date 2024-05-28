@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\llm_services\Plugin\LLModelsProviders;
+namespace Drupal\llm_services\Plugin\LLModelProviders;
 
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\llm_services\Model\Payload;
 
 /**
- * LLModelsProviders plugin interface.
+ * LLModelProviders plugin interface.
  */
 interface LLMProviderInterface extends PluginInspectionInterface {
 

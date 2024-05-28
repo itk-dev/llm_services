@@ -7,13 +7,13 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\llm_services\Form\PluginSettingsForm;
-use Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface;
+use Drupal\llm_services\Plugin\LLModelProviders\LLMProviderInterface;
 
 /**
  * Provides the LLM plugin manager.
  *
- * @see \Drupal\llm_services\Annotation\LLModelsProvider
- * @see \Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface
+ * @see \Drupal\llm_services\Annotation\LLModelProvider
+ * @see \Drupal\llm_services\Plugin\LLModelProviders\LLMProviderInterface
  * @see plugin_api
  */
 class LLModelProviderManager extends DefaultPluginManager {
@@ -37,11 +37,11 @@ class LLModelProviderManager extends DefaultPluginManager {
     $this->configFactory = $configFactory;
 
     parent::__construct(
-      'Plugin/LLModelsProviders',
+      'Plugin/LLModelProviders',
       $namespaces,
       $module_handler,
-      'Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface',
-      'Drupal\llm_services\Annotation\LLModelsProvider',
+      'Drupal\llm_services\Plugin\LLModelProviders\LLMProviderInterface',
+      'Drupal\llm_services\Annotation\LLModelProvider',
     );
 
     $this->alterInfo('llm_services_providers_info');
@@ -56,7 +56,7 @@ class LLModelProviderManager extends DefaultPluginManager {
       $configuration = $this->configFactory->get(PluginSettingsForm::getConfigName())->get($plugin_id);
     }
 
-    /** @var \Drupal\llm_services\Plugin\LLModelsProviders\LLMProviderInterface $provider */
+    /** @var \Drupal\llm_services\Plugin\LLModelProviders\LLMProviderInterface $provider */
     $provider = parent::createInstance($plugin_id, $configuration);
 
     return $provider;

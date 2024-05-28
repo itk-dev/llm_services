@@ -6,13 +6,13 @@ use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 
 /**
- * Defines a LLModelsProvider annotation object.
+ * Defines a LLModelProvider annotation object.
  *
  * @see plugin_api
  *
  * @Annotation
  */
-class LLModelsProvider extends Plugin {
+class LLModelProvider extends Plugin {
 
   /**
    * The plugin ID.
