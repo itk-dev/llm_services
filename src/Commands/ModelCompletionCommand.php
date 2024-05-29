@@ -75,18 +75,25 @@ class ModelCompletionCommand extends Command {
 
   /**
    * {@inheritDoc}
+   *
+   * @throws \Drupal\llm_services\Exceptions\CommunicationException
    */
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $providerName = $input->getArgument('provider');
     $name = $input->getArgument('name');
     $prompt = $input->getArgument('prompt');
-
     $temperature = $input->getOption('temperature');
     $topK = $input->getOption('top-k');
     $topP = $input->getOption('top-p');
 
-    $provider = $this->providerManager->createInstance($providerName);
+    if (!is_numeric($temperature) || !is_numeric($topK) || !is_numeric($topP)) {
+      $output->writeln('Invalid input. Temperature, top-k, and top-p must be numeric values.');
 
+      return Command::FAILURE;
+    }
+
+    // Build configuration.
+    $provider = $this->providerManager->createInstance($providerName);
     $payLoad = new Payload();
     $payLoad->model = $name;
     $payLoad->options = [
@@ -94,6 +101,8 @@ class ModelCompletionCommand extends Command {
       'top_k' => $topK,
       'top_p' => $topP,
     ];
+
+    // Create a completion message.
     $msg = new Message();
     $msg->content = $prompt;
     $payLoad->messages[] = $msg;

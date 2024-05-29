@@ -88,6 +88,12 @@ class ModelChatCommand extends Command {
     $topK = $input->getOption('top-k');
     $topP = $input->getOption('top-p');
 
+    if (!is_numeric($temperature) || !is_numeric($topK) || !is_numeric($topP)) {
+      $output->writeln('Invalid input. Temperature, top-k, and top-p must be numeric values.');
+
+      return Command::FAILURE;
+    }
+
     $provider = $this->providerManager->createInstance($providerName);
 
     // Build configuration.
