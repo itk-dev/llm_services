@@ -60,8 +60,6 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    $config = $this->config(self::$configName);
-
     $plugins = $this->providerManager->getDefinitions();
     ksort($plugins);
     $options = array_map(function ($plugin) {
@@ -71,25 +69,13 @@ class SettingsForm extends ConfigFormBase {
     }, $plugins);
 
     $form['provider'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Provider'),
-      '#description' => $this->t('Select the provider you wish to use'),
-      '#options' => $options,
-      '#default_value' => $config->get('provider'),
+      '#type' => 'item',
+      '#title' => $this->t('Providers'),
+      '#description' => $this->t('This is the list of provider plugins detected. Use the local menu tasks to configure the integrations.'),
+      '#markup' => '<ul><li>' . implode('</li><li>', $options) . '</li></ul>',
     ];
 
-    return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state): void {
-    parent::submitForm($form, $form_state);
-
-    $this->config(self::$configName)
-      ->set('provider', $form_state->getValue('provider'))
-      ->save();
+    return $form;
   }
 
 }
