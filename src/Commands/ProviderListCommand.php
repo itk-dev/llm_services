@@ -33,7 +33,7 @@ class ProviderListCommand extends Command {
   protected function configure(): void {
     $this
       ->setName('llm:provider:list')
-      ->setDescription('Install model in provider')
+      ->setDescription('Lists installed models in provider')
       ->addUsage('llm:provider:list ollama')
       ->addArgument(
         name: 'provider',

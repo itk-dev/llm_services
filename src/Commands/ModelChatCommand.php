@@ -113,7 +113,7 @@ class ModelChatCommand extends Command {
     $helper = $this->getHelper('question');
     $question = new Question('Message: ', '');
 
-    // Keep cheating with the user. Not optimal, but okay for now.
+    // Keep chatting with the user. Not optimal, but okay for now.
     while (TRUE) {
       // Query the next question.
       $output->write("\n");
