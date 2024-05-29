@@ -1,0 +1,5 @@
+llm_services.admin_settings:
+  title: 'LLM services settings'
+  parent: system.admin_config_system
+  description: 'Settings for the LLM services'
+  route_name: llm_services.plugin_settings_local_tasks

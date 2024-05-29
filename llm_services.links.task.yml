@@ -1,0 +1,5 @@
+llm_services.plugin_settings_tasks:
+  title: 'LLM services settings'
+  route_name: llm_services.plugin_settings_local_tasks
+  base_route: llm_services.plugin_settings_local_tasks
+  deriver: Drupal\llm_services\Plugin\Derivative\LocalTask

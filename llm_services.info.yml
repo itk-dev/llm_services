@@ -1,0 +1,5 @@
+name: "Large language model services"
+description: 'Large language module services to communicate with the models.'
+type: module
+core_version_requirement: ^10
+configure: llm_services.plugin_settings_local_tasks

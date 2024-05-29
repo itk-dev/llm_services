@@ -1,0 +1,28 @@
+services:
+  llm.service.completion.command:
+    class: Drupal\llm_services\Commands\ModelCompletionCommand
+    arguments:
+      - '@plugin.manager.llm_services'
+    tags:
+      -  { name: console.command }
+
+  llm.service.install.command:
+    class: Drupal\llm_services\Commands\ProviderInstallCommand
+    arguments:
+      - '@plugin.manager.llm_services'
+    tags:
+      -  { name: console.command }
+
+  llm.service.list.command:
+    class: Drupal\llm_services\Commands\ProviderListCommand
+    arguments:
+      - '@plugin.manager.llm_services'
+    tags:
+      -  { name: console.command }
+
+  llm.service.char.command:
+    class: Drupal\llm_services\Commands\ModelChatCommand
+    arguments:
+      - '@plugin.manager.llm_services'
+    tags:
+      -  { name: console.command }
