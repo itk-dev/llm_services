@@ -171,10 +171,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     // Try to connect to Ollama to test the connection.
     try {
       $this->listModels();
-      $this->messenger->addMessage('Successfully connected to Ollama');
+      $this->messenger()->addMessage('Successfully connected to Ollama');
     }
     catch (\Exception $exception) {
-      $this->messenger->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
+      $this->messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
     }
   }
 
