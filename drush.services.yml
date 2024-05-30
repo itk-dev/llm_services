@@ -20,7 +20,7 @@ services:
     tags:
       -  { name: console.command }
 
-  llm.service.char.command:
+  llm.service.chat.command:
     class: Drupal\llm_services\Commands\ModelChatCommand
     arguments:
       - '@plugin.manager.llm_services'

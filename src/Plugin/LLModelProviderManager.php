@@ -49,6 +49,10 @@ class LLModelProviderManager extends DefaultPluginManager {
   public function createInstance($plugin_id, array $configuration = []): LLMProviderInterface {
     if (empty($configuration)) {
       $configuration = $this->configFactory->get(PluginSettingsForm::getConfigName())->get($plugin_id);
+      if ($configuration === NULL) {
+        // Fallback to default configuration for the provider.
+        $configuration = [];
+      }
     }
 
     /** @var \Drupal\llm_services\Plugin\LLModelProviders\LLMProviderInterface $provider */
