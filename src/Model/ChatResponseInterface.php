@@ -50,6 +50,6 @@ interface ChatResponseInterface {
    * @return bool
    *   If false, the model has more to say.
    */
-  public function getStatus(): bool;
+  public function isCompleted(): bool;
 
 }

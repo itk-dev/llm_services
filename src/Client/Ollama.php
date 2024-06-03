@@ -118,9 +118,10 @@ class Ollama {
   public function completion(Payload $payload): \Generator {
     $response = $this->call(method: 'post', uri: '/api/generate', options: [
       'json' => [
-        'model' => $payload->model,
-        'prompt' => $payload->messages[0]->content,
+        'model' => $payload->getModel(),
+        'prompt' => $payload->getMessages()[0]->content,
         'stream' => TRUE,
+        'options' => $payload->getOptions(),
       ],
       'headers' => [
         'Content-Type' => 'application/json',
@@ -152,9 +153,10 @@ class Ollama {
   public function chat(Payload $payload): \Generator {
     $response = $this->call(method: 'post', uri: '/api/chat', options: [
       'json' => [
-        'model' => $payload->model,
+        'model' => $payload->getModel(),
         'messages' => $this->chatMessagesAsArray($payload),
         'stream' => TRUE,
+        'options' => $payload->getOptions(),
       ],
       'headers' => [
         'Content-Type' => 'application/json',
@@ -187,7 +189,7 @@ class Ollama {
    */
   private function chatMessagesAsArray(Payload $payload): array {
     $messages = [];
-    foreach ($payload->messages as $message) {
+    foreach ($payload->getMessages() as $message) {
       $messages[] = [
         'content' => $message->content,
         'role' => $message->role->value,
