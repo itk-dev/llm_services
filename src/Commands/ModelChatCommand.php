@@ -98,16 +98,14 @@ class ModelChatCommand extends Command {
 
     // Build configuration.
     $payLoad = new Payload();
-    $payLoad->model = $name;
-    $payLoad->options = [
-      'temperature' => $temperature,
-      'top_k' => $topK,
-      'top_p' => $topP,
-    ];
+    $payLoad->setModel($name)
+      ->addOption('temperature', $temperature)
+      ->addOption('top_k', $topK)
+      ->addOption('top_p', $topP);
     $msg = new Message();
     $msg->role = MessageRoles::System;
     $msg->content = $systemPrompt;
-    $payLoad->messages[] = $msg;
+    $payLoad->addMessage($msg);
 
     /** @var \Symfony\Component\Console\Helper\HelperInterface $helper */
     $helper = $this->getHelper('question');
@@ -120,7 +118,7 @@ class ModelChatCommand extends Command {
       $msg = new Message();
       $msg->role = MessageRoles::User;
       $msg->content = $helper->ask($input, $output, $question);
-      $payLoad->messages[] = $msg;
+      $payLoad->addMessage($msg);
       $output->write("\n");
 
       $answer = '';
@@ -134,7 +132,7 @@ class ModelChatCommand extends Command {
       $msg = new Message();
       $msg->role = MessageRoles::Assistant;
       $msg->content = $answer;
-      $payLoad->messages[] = $msg;
+      $payLoad->addMessage($msg);
     }
   }
 

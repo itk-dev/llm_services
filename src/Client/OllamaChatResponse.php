@@ -21,7 +21,7 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
    *   The role of the message.
    * @param array<string> $images
    *   Base64 encoded array of images.
-   * @param bool $done
+   * @param bool $completed
    *   The module completion state.
    */
   public function __construct(
@@ -29,7 +29,7 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
     private string $content,
     private MessageRoles $role,
     private array $images,
-    private bool $done,
+    private bool $completed,
   ) {
   }
 
@@ -43,8 +43,8 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
   /**
    * {@inheritdoc}
    */
-  public function getStatus(): bool {
-    return $this->done;
+  public function isCompleted(): bool {
+    return $this->completed;
   }
 
   /**

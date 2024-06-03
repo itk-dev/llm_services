@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Change response message interface.
 
 ## [0.0.3] - 2024-30-06
 
-- First version of the module
+- First version of the module.
 
 [0.0.3]: https://github.com/itk-dev/llm_services/compare/51a8d2e3cfdfe355987bdc1f109cb4e1ecb4cc3a...0.0.3
 [Unreleased]: https://github.com/itk-dev/llm_services/compare/develop...HEAD

@@ -95,17 +95,15 @@ class ModelCompletionCommand extends Command {
     // Build configuration.
     $provider = $this->providerManager->createInstance($providerName);
     $payLoad = new Payload();
-    $payLoad->model = $name;
-    $payLoad->options = [
-      'temperature' => $temperature,
-      'top_k' => $topK,
-      'top_p' => $topP,
-    ];
+    $payLoad->setModel($name)
+      ->addOption('temperature', $temperature)
+      ->addOption('top_k', $topK)
+      ->addOption('top_p', $topP);
 
     // Create a completion message.
     $msg = new Message();
     $msg->content = $prompt;
-    $payLoad->messages[] = $msg;
+    $payLoad->addMessage($msg);
 
     foreach ($provider->completion($payLoad) as $res) {
       $output->write($res->getResponse());

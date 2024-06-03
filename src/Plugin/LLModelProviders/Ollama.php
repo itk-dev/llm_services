@@ -82,7 +82,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
         content: $chunk['message']['content'] ?? '',
         role: $chunk['message']['role'] ? MessageRoles::from($chunk['message']['role']) : MessageRoles::Assistant,
         images: $chunk['message']['images'] ?? [],
-        done: $chunk['done'],
+        completed: $chunk['done'],
       );
     }
   }
