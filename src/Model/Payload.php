@@ -68,7 +68,7 @@ class Payload {
    * Add a message to the message array.
    *
    * @param Message $message
-   *   The message to add
+   *   The message to add.
    */
   public function addMessage(Message $message): self {
     $this->messages[] = $message;
@@ -79,7 +79,7 @@ class Payload {
   /**
    * Retrieves the options currently set.
    *
-   * @return array
+   * @return array<string, mixed>
    *   The options array.
    */
   public function getOptions(): array {
@@ -104,4 +104,5 @@ class Payload {
 
     return $this;
   }
+
 }

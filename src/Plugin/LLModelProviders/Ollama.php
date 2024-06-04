@@ -112,6 +112,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     return [
       'url' => 'http://ollama',
       'port' => '11434',
+      'auth' => [
+        'username' => '',
+        'password' => '',
+      ],
     ];
   }
 
@@ -121,14 +125,37 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form['url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('The URL to connect to the Ollama API.'),
+      '#title' => $this->t('URL'),
+      '#description' => $this->t('The http(s) URL to connect to the Ollama API.'),
       '#default_value' => $this->configuration['url'],
     ];
 
     $form['port'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('The port that Ollama runs on.'),
+      '#title' => $this->t('Port'),
+      '#description' => $this->t('The port that Ollama runs on'),
       '#default_value' => $this->configuration['port'],
+    ];
+
+    $form['auth'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Basic auth'),
+      '#description' => $this->t('Basic authentication (if Ollama is placed behind proxy)'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+    ];
+
+    $form['auth']['username'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Username.'),
+      '#default_value' => $this->configuration['auth']['username'],
+    ];
+
+    $form['auth']['password'] = [
+      '#type' => 'password',
+      '#title' => $this->t('password'),
+      '#default_value' => $this->configuration['auth']['password'],
     ];
 
     return $form;
@@ -153,6 +180,13 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     if (filter_var($values['port'], FILTER_VALIDATE_INT, $filter_options) === FALSE) {
       $form_state->setErrorByName('port', $this->t('Invalid port range. Should be between 1 and 65535.'));
     }
+
+    if ($values['auth']['username'] && !$values['auth']['password']) {
+      $form_state->setErrorByName('auth][password', $this->t('Password is required when username is provided.'));
+    }
+    if (!$values['auth']['username'] && $values['auth']['password']) {
+      $form_state->setErrorByName('auth][username', $this->t('Username is required when password is provided.'));
+    }
   }
 
   /**
@@ -164,7 +198,12 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
       $configuration = [
         'url' => $values['url'],
         'port' => $values['port'],
+        'auth' => [
+          'username' => $values['auth']['username'],
+          'password' => $values['auth']['password'],
+        ],
       ];
+
       $this->setConfiguration($configuration);
     }
 
@@ -185,7 +224,13 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    *   Client to communicate with Ollama.
    */
   public function getClient(): ClientOllama {
-    return new ClientOllama($this->configuration['url'], $this->configuration['port'], \Drupal::httpClient());
+    return new ClientOllama(
+      url: $this->configuration['url'],
+      port: $this->configuration['port'],
+      client:  \Drupal::httpClient(),
+      username: $this->configuration['auth']['username'],
+      password: $this->configuration['auth']['password'],
+    );
   }
 
 }
