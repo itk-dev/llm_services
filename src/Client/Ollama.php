@@ -32,11 +32,17 @@ class Ollama {
    *   The port that Ollama is listening at.
    * @param \GuzzleHttp\ClientInterface $client
    *   The http client used to interact with ollama.
+   * @param string $username
+   *   Basic auth username (default: empty string).
+   * @param string $password
+   *   Basic auth password (default: empty string).
    */
   public function __construct(
     private readonly string $url,
     private readonly int $port,
     private readonly ClientInterface $client,
+    private readonly string $username = '',
+    private readonly string $password = '',
   ) {
   }
 
@@ -267,13 +273,23 @@ class Ollama {
    */
   private function call(string $method, string $uri, array $options = []): ResponseInterface {
     try {
+      // Add basic auth if given.
+      if (!empty($this->username)) {
+        $auth = 'Basic ' . base64_encode($this->username . ':' . $this->password);
+        if (isset($options['headers'])) {
+          $options['headers']['Authorization'] = $auth;
+        }
+        else {
+          $options['headers'] = ['Authorization' => $auth];
+        }
+      }
       $response = $this->client->request($method, $this->getUrl($uri), $options);
       if ($response->getStatusCode() !== 200) {
         throw new CommunicationException('Request failed', $response->getStatusCode());
       }
     }
     catch (GuzzleException $exception) {
-      throw new CommunicationException('Request failed', $exception->getCode(), $exception);
+      throw new CommunicationException('Request failed: ' . $exception->getMessage(), $exception->getCode(), $exception);
     }
 
     return $response;
