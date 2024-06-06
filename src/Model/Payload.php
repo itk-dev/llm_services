@@ -77,6 +77,37 @@ class Payload {
   }
 
   /**
+   * Override messages.
+   *
+   * @param array<\Drupal\llm_services\Model\Message> $messages
+   *   Array of message objects to set.
+   *
+   * @return $this
+   */
+  public function setMessages(array $messages): self {
+    $this->messages = $messages;
+
+    return $this;
+  }
+
+  /**
+   * Remove a message from messages.
+   *
+   * @param \Drupal\llm_services\Model\Message $message
+   *   The message to remove.
+   *
+   * @return $this
+   */
+  public function removeMessage(Message $message): self {
+    $key = array_search($message, $this->messages);
+    if ($key !== FALSE) {
+      unset($this->messages[$key]);
+    }
+
+    return $this;
+  }
+
+  /**
    * Retrieves the options currently set.
    *
    * @return array<string, mixed>
