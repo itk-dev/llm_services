@@ -223,8 +223,7 @@ class Ollama {
    * @throws \JsonException
    */
   private function parse(string $data): \Generator {
-    // Split on new-lines.
-    $strings = explode("\n", $data);
+    $strings = $this->parseDataToStrings($data);
 
     foreach ($strings as $str) {
       if (json_validate($str)) {
@@ -254,6 +253,72 @@ class Ollama {
         }
       }
     }
+  }
+
+  /**
+   * Parse data received from Ollama into string array.
+   *
+   * The data from Ollama when request in stream may not be complete JSON
+   * objects superheated by new-lines. It may be partial JSON objects, and the
+   * objects theme self may contain new-lines (as the result from the LLM itself
+   * uses new-lines). So simply splitting on new-lines is not a solution.
+   *
+   * Also, the first and last parts of the data may be partial objects or string
+   * that will be completed in the next response.
+   *
+   * @param string $data
+   *   The raw data string from the LLM.
+   *
+   * @return array<string>
+   *   Array of strings.
+   */
+  private function parseDataToStrings(string $data): array {
+    $results = [];
+
+    // Match all json objects in the data.
+    preg_match_all('/\{(?:[^{}]|(?R))*}/x', $data, $matches, PREG_OFFSET_CAPTURE);
+
+    // Check the first and last matches as they may not be complete. We know
+    // that a complet ollama json response contains both "model" and "done"
+    // keys.
+    $pattern = '/\bmodel\b.*\bdone\b|\bdone\b.*\bmodel\b/';
+    foreach ($matches[0] as $index => $match) {
+      if (!preg_match($pattern, $match[0])) {
+        // By looking at the next item and its offset, we can find the end of
+        // the first invalid part.
+        if (array_key_exists($index + 1, $matches[0])) {
+          // The next match exists, so this is at the beginning of the data
+          // string.
+          $start = 0;
+          $end = $matches[0][$index + 1][1];
+          $results[] = trim(substr($data, $start, $end));
+        }
+        else {
+          // This is in the last match, so find the start of the latest result
+          // and add the length of that to the offset.
+          $start = (int) $matches[0][$index - 1][1] + mb_strlen($results[$index - 1]);
+          $results[] = trim(substr($data, $start));
+        }
+      }
+      elseif ($index === 0 && $match[1] !== 0) {
+        // Edge case: Where the preg_match_all do not match the first part as
+        // json objects.
+        $results[] = trim(substr($data, 0, $match[1]));
+      }
+      else {
+        $results[] = $match[0];
+      }
+    }
+
+    // Edge case: Where the preg_match_all do not match the last part as
+    // json objects.
+    $last = end($matches[0]);
+    $total = (int) $last[1] + mb_strlen($last[0]);
+    if ($total < mb_strlen($data)) {
+      $results[] = trim(substr($data, $total));
+    }
+
+    return $results;
   }
 
   /**
