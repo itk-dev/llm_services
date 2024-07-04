@@ -8,8 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2024-04-07
+
 - Parse stream data from LLM correctly in relation to newlines
   between json objects and in the LLM response.
+
+## [0.0.6] - 2024-06-06
+
+- Added support for removing messages from payload.
 
 ## [0.0.5] - 2024-04-06
 
