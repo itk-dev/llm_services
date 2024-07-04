@@ -259,7 +259,7 @@ class Ollama {
    * Parse data received from Ollama into string array.
    *
    * The data from Ollama when request in stream may not be complete JSON
-   * objects superheated by new-lines. It may be partial JSON objects, and the
+   * objects separated by new-lines. It may be partial JSON objects, and the
    * objects theme self may contain new-lines (as the result from the LLM itself
    * uses new-lines). So simply splitting on new-lines is not a solution.
    *
@@ -281,7 +281,8 @@ class Ollama {
     // Check the first and last matches as they may not be complete. We know
     // that a complet ollama json response contains both "model" and "done"
     // keys.
-    $pattern = '/\bmodel\b.*\bdone\b|\bdone\b.*\bmodel\b/';
+    $completResponseFound = FALSE;
+    $pattern = '/\bmodel\b.*\bdone\b/';
     foreach ($matches[0] as $index => $match) {
       if (!preg_match($pattern, $match[0])) {
         // By looking at the next item and its offset, we can find the end of
@@ -304,18 +305,41 @@ class Ollama {
         // Edge case: Where the preg_match_all do not match the first part as
         // json objects.
         $results[] = trim(substr($data, 0, $match[1]));
+
+        // Add the actual match form the matches array.
+        $results[] = $match[0];
+        $completResponseFound = TRUE;
       }
       else {
         $results[] = $match[0];
+        $completResponseFound = TRUE;
       }
     }
 
-    // Edge case: Where the preg_match_all do not match the last part as
-    // json objects.
-    $last = end($matches[0]);
-    $total = (int) $last[1] + mb_strlen($last[0]);
-    if ($total < mb_strlen($data)) {
-      $results[] = trim(substr($data, $total));
+    // If a complete JSON response was not found, then the function checks for
+    // the offset of the first "}\n{" (closing of one JSON object and start of
+    // another) in the data and if found, splits the string into two parts from
+    // this offset. If not found, it just adds the trimmed data as it is.
+    if (!$completResponseFound) {
+      $results = [];
+      if ($end = strpos($data, "}\n{")) {
+        $results[] = substr($data, 0, $end + 1);
+        $results[] = substr($data, $end + 2);
+      }
+      else {
+        $results[] = trim($data);
+      }
+    }
+    else {
+      // If a complete JSON response was found, then the function checks if
+      // there is any leftover data after adding up the lengths of all the
+      // strings in $results. If there is any leftover data, then it is
+      // considered as the final fragment of a JSON object and appended to
+      // $results.
+      $total = (int) array_sum(array_map('strlen', $results)) + count($results) - 1;
+      if ($total < mb_strlen($data)) {
+        $results[] = trim(substr($data, $total));
+      }
     }
 
     return $results;
