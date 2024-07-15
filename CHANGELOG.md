@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- VLLM client and plugin to support VLLM communication.
+
 ## [0.0.7] - 2024-04-07
 
 - Parse stream data from LLM correctly in relation to newlines

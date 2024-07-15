@@ -7,13 +7,13 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\llm_services\Client\Vllm as ClientVllm;
-use Drupal\llm_services\Client\OllamaChatResponse;
-use Drupal\llm_services\Client\OllamaCompletionResponse;
+use Drupal\llm_services\Client\VllmChatResponse;
+use Drupal\llm_services\Client\VllmCompletionResponse;
 use Drupal\llm_services\Model\MessageRoles;
 use Drupal\llm_services\Model\Payload;
 
 /**
- * Ollama integration provider.
+ * VLLM integration provider.
  *
  * @LLModelProvider(
  *   id = "vllm",
@@ -57,11 +57,10 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
    */
   public function completion(Payload $payload): \Generator {
     foreach ($this->getClient()->completion($payload) as $chunk) {
-      yield new OllamaCompletionResponse(
+      yield new VllmCompletionResponse(
         model: $chunk['model'],
         response: $chunk['choices'][0]['text'] ?? '',
         done: $chunk['done'] ?? FALSE,
-        context: $chunk['context'] ?? [],
       );
     }
   }
@@ -70,21 +69,17 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
    * {@inheritdoc}
    *
    * @throws \JsonException
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
    */
   public function chat(Payload $payload): \Generator {
     foreach ($this->getClient()->chat($payload) as $chunk) {
       if (isset($chunk['choices'][0]['delta']['content'])) {
-        yield new OllamaChatResponse(
+        yield new VllmChatResponse(
           model: $chunk['model'],
           content: $chunk['choices'][0]['delta']['content'],
           role: MessageRoles::Assistant,
-          images: [],
           completed: $chunk['done'] ?? FALSE,
         );
       }
-
     }
   }
 
@@ -208,21 +203,21 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
       $this->setConfiguration($configuration);
     }
 
-    // Try to connect to Ollama to test the connection.
+    // Try to connect to VLLM to test the connection.
     try {
       $this->listModels();
-      $this->messenger()->addMessage('Successfully connected to Ollama');
+      $this->messenger()->addMessage('Successfully connected to VLLM');
     }
     catch (\Exception $exception) {
-      $this->messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
+      $this->messenger()->addMessage('Error communication with VLLM: ' . $exception->getMessage(), 'error');
     }
   }
 
   /**
    * Get a client.
    *
-   * @return \Drupal\llm_services\Client\Ollama
-   *   Client to communicate with Ollama.
+   * @return \Drupal\llm_services\Client\Vllm
+   *   Client to communicate with VLLM.
    */
   public function getClient(): ClientVllm {
     return new ClientVllm(

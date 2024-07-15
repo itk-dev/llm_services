@@ -11,7 +11,9 @@ use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Client to communicate with Ollama.
+ * Client to communicate with VLLM.
+ *
+ * @see https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
  */
 class Vllm {
 
@@ -28,11 +30,11 @@ class Vllm {
    * Default constructor.
    *
    * @param string $url
-   *   The URL of the Ollama server.
+   *   The URL of the VLLM server.
    * @param int $port
-   *   The port that Ollama is listening at.
+   *   The port that VLLM is listening at.
    * @param \GuzzleHttp\ClientInterface $client
-   *   The http client used to interact with ollama.
+   *   The http client used to interact with VLLM.
    * @param string $username
    *   Basic auth username (default: empty string).
    * @param string $password
@@ -96,8 +98,6 @@ class Vllm {
    *
    * @throws \Drupal\llm_services\Exceptions\CommunicationException
    * @throws \JsonException
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
   public function completion(Payload $payload): \Generator {
     $response = $this->call(method: 'post', uri: 'v1/completions', options: [
@@ -165,9 +165,7 @@ class Vllm {
    *   The payload sent to the chat function.
    *
    * @return array{content: string, role: string}[]
-   *   Array of messages to send to Ollama.
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#chat-request-with-history
+   *   Array of messages to send to VLLM.
    */
   private function chatMessagesAsArray(Payload $payload): array {
     $messages = [];
@@ -201,9 +199,16 @@ class Vllm {
   private function parse(string $data): \Generator {
     $strings = $this->parseDataToStrings($data);
 
-    foreach ($strings as $str) {
+    foreach ($strings as $index => $str) {
       if (json_validate($str)) {
-        // todo: if next string is " \n\n[DONE]" then set status in this string
+        // Special case where we have the string before done.
+        if (array_key_exists($index + 1, $strings) && $strings[$index + 1] === " [DONE]\n\n") {
+          $json = json_decode($str, TRUE, flags: JSON_THROW_ON_ERROR);
+          $json['done'] = TRUE;
+          yield $json;
+
+          return;
+        }
 
         // Valid json string lets decode an yield it.
         yield json_decode($str, TRUE, flags: JSON_THROW_ON_ERROR);
@@ -234,7 +239,7 @@ class Vllm {
   }
 
   /**
-   * Parse data received from Ollama into string array.
+   * Parse data received from VLLM into string array.
    *
    * @param string $data
    *   The raw data string from the LLM.
@@ -247,7 +252,7 @@ class Vllm {
   }
 
   /**
-   * Make request to Ollama.
+   * Make request to VLLM.
    *
    * @param string $method
    *   The method to use (GET/POST).

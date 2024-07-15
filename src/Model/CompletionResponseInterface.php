@@ -31,15 +31,4 @@ interface CompletionResponseInterface {
    */
   public function getStatus(): bool;
 
-  /**
-   * The context generated, which can be used in the next completion.
-   *
-   * This can be seen at chat history in completion requests to make the model
-   * more context aware.
-   *
-   * @return mixed
-   *   Context from the completion.
-   */
-  public function getContext(): mixed;
-
 }
