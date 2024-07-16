@@ -6,9 +6,9 @@ use Drupal\llm_services\Model\ChatResponseInterface;
 use Drupal\llm_services\Model\MessageRoles;
 
 /**
- * This class represents a completion response in the Ollama provider.
+ * This class represents a completion response in the VLLM provider.
  */
-readonly class OllamaChatResponse implements ChatResponseInterface {
+readonly class VllmChatResponse implements ChatResponseInterface {
 
   /**
    * Default constructor.
@@ -19,8 +19,6 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
    *   The content of the message from the model.
    * @param \Drupal\llm_services\Model\MessageRoles $role
    *   The role of the message.
-   * @param array<string> $images
-   *   Base64 encoded array of images.
    * @param bool $completed
    *   The module completion state.
    */
@@ -28,7 +26,6 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
     private string $model,
     private string $content,
     private MessageRoles $role,
-    private array $images,
     private bool $completed,
   ) {
   }
@@ -59,19 +56,6 @@ readonly class OllamaChatResponse implements ChatResponseInterface {
    */
   public function getRole(): MessageRoles {
     return $this->role;
-  }
-
-  /**
-   * Get images.
-   *
-   * @todo Not sure yet but this must be an base64 encode image is on is sendt
-   *       to the LLMs
-   *
-   * @return array<string>
-   *   String of base64 encoded images.
-   */
-  public function getImages(): array {
-    return $this->images;
   }
 
 }

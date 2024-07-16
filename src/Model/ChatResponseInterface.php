@@ -34,17 +34,6 @@ interface ChatResponseInterface {
   public function getRole(): MessageRoles;
 
   /**
-   * Get images.
-   *
-   * @todo Not sure yet but this must be an base64 encode image is on is sendt
-   *       to the LLMs
-   *
-   * @return array<string>
-   *   String of base64 encoded images.
-   */
-  public function getImages(): array;
-
-  /**
    * The completion status.
    *
    * @return bool
