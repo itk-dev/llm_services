@@ -116,6 +116,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
         'username' => '',
         'password' => '',
       ],
+      'timeouts' => [
+        'connect' => 10,
+        'wait' => 300,
+      ],
     ];
   }
 
@@ -131,7 +135,7 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     ];
 
     $form['port'] = [
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Port'),
       '#description' => $this->t('The port that Ollama runs on'),
       '#default_value' => $this->configuration['port'],
@@ -156,6 +160,29 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
       '#type' => 'password',
       '#title' => $this->t('password'),
       '#default_value' => $this->configuration['auth']['password'],
+    ];
+
+    $form['timeouts'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Timeouts'),
+      '#description' => $this->t('Timeouts when communicate with the API.'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+    ];
+
+    $form['timeouts']['connect'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Connection timeout'),
+      '#description' => $this->t('Seconds to wait for connection with the LLM.'),
+      '#default_value' => $this->configuration['timeouts']['connect'],
+    ];
+
+    $form['timeouts']['wait'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Wait timeout'),
+      '#description' => $this->t('Seconds to wait for response from LLM.'),
+      '#default_value' => $this->configuration['timeouts']['wait'],
     ];
 
     return $form;
@@ -201,6 +228,10 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
         'auth' => [
           'username' => $values['auth']['username'],
           'password' => $values['auth']['password'],
+        ],
+        'timeouts' => [
+          'connect' => $values['timeouts']['connect'],
+          'wait' => $values['timeouts']['wait'],
         ],
       ];
 

@@ -4,7 +4,6 @@ namespace Drupal\llm_services\Client;
 
 use Drupal\llm_services\Exceptions\NotSupportedException;
 use Drupal\llm_services\Model\Payload;
-use GuzzleHttp\RequestOptions;
 
 /**
  * Client to communicate with VLLM.
@@ -12,15 +11,6 @@ use GuzzleHttp\RequestOptions;
  * @see https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
  */
 class Vllm extends Client {
-
-  /**
-   * Cache for stream parsing.
-   *
-   * @var string
-   *
-   * @see parse()
-   */
-  private string $parserCache = '';
 
   /**
    * List all models currently installed in VLLM.
@@ -82,9 +72,6 @@ class Vllm extends Client {
       'headers' => [
         'Content-Type' => 'application/json',
       ],
-      RequestOptions::CONNECT_TIMEOUT => 10,
-      RequestOptions::TIMEOUT => 300,
-      RequestOptions::STREAM => TRUE,
     ]);
 
     $body = $response->getBody();
@@ -116,9 +103,6 @@ class Vllm extends Client {
       'headers' => [
         'Content-Type' => 'application/json',
       ],
-      RequestOptions::CONNECT_TIMEOUT => 10,
-      RequestOptions::TIMEOUT => 300,
-      RequestOptions::STREAM => TRUE,
     ]);
 
     $body = $response->getBody();

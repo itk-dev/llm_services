@@ -6,26 +6,40 @@ use Drupal\llm_services\Exceptions\CommunicationException;
 use Drupal\llm_services\Model\Payload;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Base client to communicate with LLM.
+ * Base client to communicate with a LLM framework.
  */
 abstract class Client {
+
+  /**
+   * Cache for stream parsing.
+   *
+   * @var string
+   *
+   * @see parse()
+   */
+  protected string $parserCache = '';
 
   /**
    * Default constructor.
    *
    * @param string $url
-   *   The URL of the VLLM server.
+   *   The URL to the LLM serving framework.
    * @param int $port
-   *   The port that VLLM is listening at.
+   *   The port that the framework is using.
    * @param \GuzzleHttp\ClientInterface $client
-   *   The http client used to interact with VLLM.
+   *   The http client used to interact with the framework.
    * @param string $username
    *   Basic auth username (default: empty string).
    * @param string $password
    *   Basic auth password (default: empty string).
+   * @param int $connectTimeout
+   *   The timeout for connoting to the API.
+   * @param int $waitTimeout
+   *   The timeout for wait on content from the API.
    */
   public function __construct(
     protected string $url,
@@ -33,6 +47,8 @@ abstract class Client {
     protected ClientInterface $client,
     protected string $username = '',
     protected string $password = '',
+    protected int $connectTimeout = 10,
+    protected int $waitTimeout = 300,
   ) {
   }
 
@@ -46,7 +62,7 @@ abstract class Client {
    *   The payload sent to the chat function.
    *
    * @return array{content: string, role: string}[]
-   *   Array of messages to send to VLLM.
+   *   Array of messages to send to the model.
    */
   protected function chatMessagesAsArray(Payload $payload): array {
     $messages = [];
@@ -87,6 +103,14 @@ abstract class Client {
           $options['headers'] = ['Authorization' => $auth];
         }
       }
+
+      // Add default configuration options (shared between clients).
+      $options = array_merge([
+        RequestOptions::CONNECT_TIMEOUT => $this->connectTimeout,
+        RequestOptions::TIMEOUT => $this->waitTimeout,
+        RequestOptions::STREAM => TRUE,
+      ], $options);
+
       $response = $this->client->request($method, $this->getUrl($uri), $options);
       if ($response->getStatusCode() !== 200) {
         throw new CommunicationException('Request failed', $response->getStatusCode());
