@@ -8,7 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- VLLM client and plugin to support VLLM communication.
+## [0.0.9] - 2024-17-07
+
+- Added vLLM fine tune options.
+
+## [0.0.8] - 2024-17-07
+
+- vLLM client and plugin to support VLLM communication.
 
 ## [0.0.7] - 2024-04-07
 
