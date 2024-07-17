@@ -56,6 +56,7 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
    * @throws \JsonException
    */
   public function completion(Payload $payload): \Generator {
+    $this->injectFineTuneOptionsToPayload($payload);
     foreach ($this->getClient()->completion($payload) as $chunk) {
       yield new VllmCompletionResponse(
         model: $chunk['model'],
@@ -71,6 +72,7 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
    * @throws \JsonException
    */
   public function chat(Payload $payload): \Generator {
+    $this->injectFineTuneOptionsToPayload($payload);
     foreach ($this->getClient()->chat($payload) as $chunk) {
       if (isset($chunk['choices'][0]['delta']['content'])) {
         yield new VllmChatResponse(
@@ -115,6 +117,14 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
       'timeouts' => [
         'connect' => 10,
         'wait' => 300,
+      ],
+      'tune' => [
+        'max_tokens' => 512,
+        'min_p' => 0.1,
+        'repetition_penalty' => 1.1,
+        'presence_penalty' => 0.0,
+        'frequency_penalty' => 0.0,
+        'seed' => -1,
       ],
     ];
   }
@@ -172,6 +182,7 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
       '#title' => $this->t('Connection timeout'),
       '#description' => $this->t('Seconds to wait for connection with the LLM.'),
       '#default_value' => $this->configuration['timeouts']['connect'],
+      '#min' => 1,
     ];
 
     $form['timeouts']['wait'] = [
@@ -179,6 +190,59 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
       '#title' => $this->t('Wait timeout'),
       '#description' => $this->t('Seconds to wait for response from LLM.'),
       '#default_value' => $this->configuration['timeouts']['wait'],
+      '#min' => 1,
+    ];
+
+    $form['tune'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Fine-tune'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+    ];
+
+    $form['tune']['max_tokens'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Max tokens'),
+      '#description' => $this->t('Maximum number of tokens to generate per output sequence.'),
+      '#default_value' => $this->configuration['tune']['max_tokens'],
+      '#min' => 10,
+      '#max' => 2048,
+    ];
+
+    $form['tune']['min_p'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Minimum probability (min_p)'),
+      '#description' => $this->t('Float that represents the minimum probability for a token to be considered, relative to the probability of the most likely token. Must be in [0, 1]. Set to 0 to disable this.'),
+      '#default_value' => $this->configuration['tune']['min_p'],
+    ];
+
+    $form['tune']['repetition_penalty'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Repetition penalty'),
+      '#description' => $this->t('Penalizes new tokens based on whether they appear in the prompt and the generated text so far. Values > 1 encourage the model to use new tokens, while values < 1 encourage the model to repeat tokens.'),
+      '#default_value' => $this->configuration['tune']['repetition_penalty'],
+    ];
+
+    $form['tune']['presence_penalty'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Presence penalty'),
+      '#description' => $this->t('Penalizes new tokens based on whether they appear in the generated text so far. Values > 0 encourage the model to use new tokens, while values < 0 encourage the model to repeat tokens.'),
+      '#default_value' => $this->configuration['tune']['presence_penalty'],
+    ];
+
+    $form['tune']['frequency_penalty'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Frequency penalty'),
+      '#description' => $this->t('Penalizes new tokens based on their frequency in the generated text so far. Values > 0 encourage the model to use new tokens, while values < 0 encourage the model to repeat tokens.'),
+      '#default_value' => $this->configuration['tune']['frequency_penalty'],
+    ];
+
+    $form['tune']['seed'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Seed'),
+      '#description' => $this->t('Random seed to use for the generation.'),
+      '#default_value' => $this->configuration['tune']['seed'],
     ];
 
     return $form;
@@ -229,6 +293,14 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
           'connect' => $values['timeouts']['connect'],
           'wait' => $values['timeouts']['wait'],
         ],
+        'tune' => [
+          "max_tokens" => (int) $values['tune']['max_tokens'],
+          "min_p" => (float) $values['tune']['min_p'],
+          "repetition_penalty" => (float) $values['tune']['repetition_penalty'],
+          "presence_penalty" => (float) $values['tune']['presence_penalty'],
+          "frequency_penalty" => (float) $values['tune']['frequency_penalty'],
+          "seed" => (int) $values['tune']['seed'],
+        ],
       ];
 
       $this->setConfiguration($configuration);
@@ -258,6 +330,18 @@ class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterfa
       username: $this->configuration['auth']['username'],
       password: $this->configuration['auth']['password'],
     );
+  }
+
+  /**
+   * Injects fine-tune options to the payload.
+   *
+   * @param \Drupal\llm_services\Model\Payload $payload
+   *   The payload instance to inject options into.
+   */
+  private function injectFineTuneOptionsToPayload(Payload $payload): void {
+    foreach ($this->configuration['tune'] as $options => $value) {
+      $payload->addOption($options, $value);
+    }
   }
 
 }
