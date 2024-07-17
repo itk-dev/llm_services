@@ -6,22 +6,22 @@ use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\llm_services\Client\Ollama as ClientOllama;
-use Drupal\llm_services\Client\OllamaChatResponse;
-use Drupal\llm_services\Client\OllamaCompletionResponse;
+use Drupal\llm_services\Client\Vllm as ClientVllm;
+use Drupal\llm_services\Client\VllmChatResponse;
+use Drupal\llm_services\Client\VllmCompletionResponse;
 use Drupal\llm_services\Model\MessageRoles;
 use Drupal\llm_services\Model\Payload;
 
 /**
- * Ollama integration provider.
+ * VLLM integration provider.
  *
  * @LLModelProvider(
- *   id = "ollama",
- *   title = @Translation("Ollama"),
- *   description = @Translation("Ollama hosted models.")
+ *   id = "vllm",
+ *   title = @Translation("VLLM"),
+ *   description = @Translation("Vllm hosted models.")
  * )
  */
-class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInterface, ConfigurableInterface {
+class Vllm extends PluginBase implements LLMProviderInterface, PluginFormInterface, ConfigurableInterface {
 
   /**
    * {@inheritdoc}
@@ -54,16 +54,13 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    *
    * @throws \JsonException
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
    */
   public function completion(Payload $payload): \Generator {
     foreach ($this->getClient()->completion($payload) as $chunk) {
-      yield new OllamaCompletionResponse(
+      yield new VllmCompletionResponse(
         model: $chunk['model'],
-        response: $chunk['response'],
-        done: $chunk['done'],
-        context: $chunk['context'] ?? [],
+        response: $chunk['choices'][0]['text'] ?? '',
+        done: $chunk['done'] ?? FALSE,
       );
     }
   }
@@ -72,18 +69,17 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    * {@inheritdoc}
    *
    * @throws \JsonException
-   *
-   * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
    */
   public function chat(Payload $payload): \Generator {
     foreach ($this->getClient()->chat($payload) as $chunk) {
-      yield new OllamaChatResponse(
-        model: $chunk['model'],
-        content: $chunk['message']['content'] ?? '',
-        role: $chunk['message']['role'] ? MessageRoles::from($chunk['message']['role']) : MessageRoles::Assistant,
-        images: $chunk['message']['images'] ?? [],
-        completed: $chunk['done'],
-      );
+      if (isset($chunk['choices'][0]['delta']['content'])) {
+        yield new VllmChatResponse(
+          model: $chunk['model'],
+          content: $chunk['choices'][0]['delta']['content'],
+          role: MessageRoles::Assistant,
+          completed: $chunk['done'] ?? FALSE,
+        );
+      }
     }
   }
 
@@ -110,8 +106,8 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
    */
   public function defaultConfiguration(): array {
     return [
-      'url' => 'http://ollama',
-      'port' => '11434',
+      'url' => 'http://vllm',
+      'port' => '8000',
       'auth' => [
         'username' => '',
         'password' => '',
@@ -130,21 +126,21 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL'),
-      '#description' => $this->t('The http(s) URL to connect to the Ollama API.'),
+      '#description' => $this->t('The http(s) URL to connect to the VLLM API.'),
       '#default_value' => $this->configuration['url'],
     ];
 
     $form['port'] = [
-      '#type' => 'number',
+      '#type' => 'textfield',
       '#title' => $this->t('Port'),
-      '#description' => $this->t('The port that Ollama runs on'),
+      '#description' => $this->t('The port that VLLM runs on'),
       '#default_value' => $this->configuration['port'],
     ];
 
     $form['auth'] = [
       '#type' => 'details',
       '#title' => $this->t('Basic auth'),
-      '#description' => $this->t('Basic authentication (if Ollama is placed behind proxy)'),
+      '#description' => $this->t('Basic authentication (if Vllm is placed behind proxy)'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#tree' => TRUE,
@@ -238,24 +234,24 @@ class Ollama extends PluginBase implements LLMProviderInterface, PluginFormInter
       $this->setConfiguration($configuration);
     }
 
-    // Try to connect to Ollama to test the connection.
+    // Try to connect to VLLM to test the connection.
     try {
       $this->listModels();
-      $this->messenger()->addMessage('Successfully connected to Ollama');
+      $this->messenger()->addMessage('Successfully connected to VLLM');
     }
     catch (\Exception $exception) {
-      $this->messenger()->addMessage('Error communication with Ollama: ' . $exception->getMessage(), 'error');
+      $this->messenger()->addMessage('Error communication with VLLM: ' . $exception->getMessage(), 'error');
     }
   }
 
   /**
    * Get a client.
    *
-   * @return \Drupal\llm_services\Client\Ollama
-   *   Client to communicate with Ollama.
+   * @return \Drupal\llm_services\Client\Vllm
+   *   Client to communicate with VLLM.
    */
-  public function getClient(): ClientOllama {
-    return new ClientOllama(
+  public function getClient(): ClientVllm {
+    return new ClientVllm(
       url: $this->configuration['url'],
       port: $this->configuration['port'],
       client:  \Drupal::httpClient(),
