@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10] - 2024-18-07
+
+- Added drush command to test llm basic performance.
+
 ## [0.0.9] - 2024-17-07
 
 - Added vLLM fine tune options.
