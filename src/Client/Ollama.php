@@ -213,19 +213,22 @@ class Ollama extends Client {
     $pattern = '/\bmodel\b.*\bdone\b/';
     foreach ($matches[0] as $index => $match) {
       if (!preg_match($pattern, $match[0])) {
+        $start = 0;
+
         // By looking at the next item and its offset, we can find the end of
         // the first invalid part.
         if (array_key_exists($index + 1, $matches[0])) {
           // The next match exists, so this is at the beginning of the data
           // string.
-          $start = 0;
           $end = $matches[0][$index + 1][1];
           $results[] = trim(substr($data, $start, $end));
         }
         else {
           // This is in the last match, so find the start of the latest result
           // and add the length of that to the offset.
-          $start = (int) $matches[0][$index - 1][1] + mb_strlen($results[$index - 1]);
+          if (isset($matches[0][$index - 1])) {
+            $start = (int) $matches[0][$index - 1][1] + mb_strlen($results[$index - 1]);
+          }
           $results[] = trim(substr($data, $start));
         }
       }

@@ -26,3 +26,11 @@ services:
       - '@plugin.manager.llm_services'
     tags:
       -  { name: console.command }
+
+  llm.service.pref.command:
+    class: Drupal\llm_services\Commands\ProviderPerformanceCommand
+    arguments:
+      - '@plugin.manager.llm_services'
+      - '@extension.list.module'
+    tags:
+      -  { name: console.command }
