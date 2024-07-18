@@ -82,6 +82,386 @@
   {
     "description": "Explain subjective interpretation of Giger art.",
     "prompt_text": "Some people are repelled by H.R. Giger's artwork, while others are fascinated by it.  How do you explain these differing reactions?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan påvirker klimaforandringer biodiversiteten i Arktis?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Explain the principles behind quantum entanglement and its potential applications."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan social ulighed påvirke den mentale sundhed i byområder?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the impact of artificial intelligence on job markets in developing countries."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste faktorer, der driver økonomisk vækst i nye markeder?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "What are the ethical implications of genetic editing in humans?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi forbedre bæredygtig landbrugspraksis for at reducere CO2-udledning?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of dark matter in the formation of galaxies."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de potentielle risici ved nanoteknologi i medicinsk behandling?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "What are the socio-political impacts of climate-induced migration?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan implementeringen af grøn energi påvirke global økonomisk stabilitet?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the feasibility of colonizing Mars and the potential challenges involved."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er sammenhængen mellem globalisering og kulturel homogenisering?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Explain the role of blockchain technology in enhancing cybersecurity."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan påvirker urbanisering naturlige økosystemer og biodiversitet?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the effects of income inequality on social cohesion and political stability."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de største udfordringer ved at bevare truede dyrearter i deres naturlige habitat?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential benefits and risks of autonomous vehicles in urban areas."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi bruge big data til at forbedre folkesundhed og sygdomsforebyggelse?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "What are the main barriers to achieving universal healthcare coverage in low-income countries?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de langsigtede konsekvenser af overfiskeri på marine økosystemer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the impact of renewable energy sources on traditional energy markets."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi reducere plastforurening i verdenshavene?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the implications of rising sea levels on coastal communities."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste udfordringer ved at sikre global fødevaresikkerhed i fremtiden?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of CRISPR technology in treating genetic disorders."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi forbedre offentlig transport for at reducere byernes CO2-aftryk?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the relationship between mental health and economic productivity."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de økonomiske og miljømæssige fordele ved cirkulær økonomi?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "What are the potential consequences of antimicrobial resistance on global health?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi bruge kunstig intelligens til at forudsige og forhindre naturkatastrofer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the role of international cooperation in addressing global climate change."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de største fordele og ulemper ved decentraliseret energiproduktion?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the impact of digital currencies on global financial systems."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi beskytte truede økosystemer fra invasive arter?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "What are the ethical considerations of using AI in decision-making processes?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi sikre en retfærdig overgang til en grøn økonomi?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the role of education in promoting sustainable development."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste udfordringer ved at implementere smart city-teknologier?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the impact of social media on political polarization and public discourse."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi reducere ulighed i adgang til uddannelse globalt?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the potential of vertical farming in addressing food security issues."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de økonomiske og miljømæssige konsekvenser af palmeolieproduktion?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the effectiveness of international laws in protecting human rights."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi fremme ansvarlig forbrug og produktion for at opnå bæredygtighed?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of fusion energy as a sustainable energy source."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de sociale og økonomiske konsekvenser af en aldrende befolkning?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the impact of climate change on global agricultural productivity."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi sikre adgang til rent vand og sanitet for alle?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of renewable energy storage in achieving energy security."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de største udfordringer ved at bevare koralrev?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the implications of advancements in biotechnology on healthcare."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi fremme bæredygtig turisme i sårbare økosystemer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the potential of space exploration in addressing Earth's resource limitations."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de miljømæssige konsekvenser af øget kødforbrug?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the impact of climate change on global migration patterns."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi fremme brugen af offentlige transportmidler i store byer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of AI in revolutionizing the healthcare industry."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste faktorer, der påvirker udviklingen af grøn teknologi?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the role of policy-making in addressing environmental issues."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi reducere energiforbruget i bygninger gennem bedre design og teknologi?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the socio-economic impacts of digital transformation in traditional industries."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de største udfordringer ved at bekæmpe global sult og underernæring?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of the Internet of Things (IoT) in enhancing urban living."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi sikre en bæredygtig forvaltning af skovressourcer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the impact of global trade policies on developing economies."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste udfordringer ved at reducere luftforurening i storbyer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of cultural heritage in promoting national identity and unity."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi fremme innovation i vedvarende energiteknologier?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of telemedicine in improving access to healthcare."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de økonomiske konsekvenser af klimaændringer på landbrug?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the impact of technological advancements on privacy and security."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi reducere afhængigheden af fossile brændstoffer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of education in reducing poverty and inequality."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste faktorer, der påvirker udviklingen af elektriske køretøjer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of augmented reality in transforming industries."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi sikre, at økonomisk vækst er bæredygtig og inkluderende?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the impact of international organizations in addressing global challenges."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de sociale konsekvenser af teknologisk ulighed?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the role of entrepreneurship in driving economic development."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi forbedre energiforsyningen i afsidesliggende områder?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the impact of climate change on biodiversity hotspots."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste udfordringer ved at opnå global energisikkerhed?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of 3D printing in revolutionizing manufacturing."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi fremme ligestilling mellem kønnene i videnskab og teknologi?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Evaluate the effectiveness of environmental policies in reducing pollution."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de langsigtede konsekvenser af skovrydning?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of international trade in economic growth."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi reducere vores økologiske fodaftryk gennem bæredygtig praksis?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Discuss the potential of nanotechnology in advancing medicine."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de økonomiske og sociale fordele ved at investere i uddannelse?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Examine the impact of automation on the future of work."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvordan kan vi sikre bæredygtig fiskeri og beskytte marine ressourcer?"
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Analyze the role of policy frameworks in supporting renewable energy adoption."
+  },
+  {
+    "description": "Simple question",
+    "prompt_text": "Hvad er de vigtigste udfordringer ved at implementere grønne byplanlægningsstrategier?"
   }
 ]
 

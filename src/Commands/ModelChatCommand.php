@@ -60,19 +60,19 @@ class ModelChatCommand extends Command {
         name: 'temperature',
         mode: InputOption::VALUE_REQUIRED,
         description: 'The temperature of the model. Increasing the temperature will make the model answer more creatively.',
-        default: '0.8'
+        default: 0.8
       )
       ->addOption(
         name: 'top-k',
         mode: InputOption::VALUE_REQUIRED,
         description: 'Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers.',
-        default: '40'
+        default: 40
       )
       ->addOption(
         name: 'top-p',
         mode: InputOption::VALUE_REQUIRED,
         description: 'A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.',
-        default: '0.9'
+        default: 0.5
       );
   }
 
@@ -84,15 +84,9 @@ class ModelChatCommand extends Command {
     $name = $input->getArgument('name');
 
     $systemPrompt = $input->getOption('system-prompt');
-    $temperature = $input->getOption('temperature');
-    $topK = $input->getOption('top-k');
-    $topP = $input->getOption('top-p');
-
-    if (!is_numeric($temperature) || !is_numeric($topK) || !is_numeric($topP)) {
-      $output->writeln('Invalid input. Temperature, top-k, and top-p must be numeric values.');
-
-      return Command::FAILURE;
-    }
+    $temperature = (float) $input->getOption('temperature');
+    $topK = (int) $input->getOption('top-k');
+    $topP = (float) $input->getOption('top-p');
 
     $provider = $this->providerManager->createInstance($providerName);
 
